@@ -15,6 +15,7 @@ $segments = get_terms([
 $seg = isset($_GET['seg']) ? absint($_GET['seg']) : '';
 $mat = isset($_GET['mat']) ? absint($_GET['mat']) : '';
 $pro = isset($_GET['pro']) ? absint($_GET['pro']) : '';
+$sup = isset($_GET['sup']) ? absint($_GET['sup']) : '';
 
 $current_url = fw_current_url();
 ?>
@@ -24,6 +25,11 @@ $current_url = fw_current_url();
 			<h6 class="mb-2 text-uppercase d-flex">
 				<a class="me-1" href="<?=esc_url($queried_link)?>"><?php the_archive_title(); ?></a>
 				<?php
+				if($sup) {
+					?>
+					<span class="me-1">/</span><a class="me-1" href="<?php echo esc_url(add_query_arg(['sup'=>$sup], $queried_link)); ?>"><?=esc_html(strip_tags(get_term_field( 'description', $sup, 'supplier' )))?></a>
+					<?php
+				}
 				if($seg) {
 					?>
 					<span class="me-1">/</span><a class="me-1" href="<?php echo esc_url(add_query_arg(['seg'=>$seg], $queried_link)); ?>"><?=esc_html(get_term_field( 'name', $seg, 'segment' ))?></a>

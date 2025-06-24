@@ -8,9 +8,14 @@ class Texture {
 		
 		switch ($column) {
 			case 'image':
-				$images = $texture->get('images', []);
-				if($images) {
-					echo wp_get_attachment_image( $images[0]['attachment_id'], 'thumbnail', false );
+				// $images = $texture->get('images', []);
+				// if($images) {
+				// 	echo wp_get_attachment_image( $images[0]['attachment_id'], 'thumbnail', false );
+				// } else {
+				// 	echo '<i>(No image)</i>';
+				// }
+				if(has_post_thumbnail( $texture->post )) {
+					echo get_the_post_thumbnail( $texture->post, 'thumbnail' );
 				} else {
 					echo '<i>(No image)</i>';
 				}
@@ -196,7 +201,7 @@ class Texture {
 
 		if(!$update) {
 			global $wpdb;
-			$wpdb->update( $wpdb->posts, ['post_name' => 'vl-'.$post_id], ['ID' => $post_id] );
+			$wpdb->update( $wpdb->posts, ['post_name' => 'texture-'.$post_id], ['ID' => $post_id] );
 			
 			wp_cache_delete( $post_id, 'posts' );
 		}

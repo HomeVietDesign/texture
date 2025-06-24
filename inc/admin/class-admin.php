@@ -65,7 +65,7 @@ class Main {
 
 	private function hooks_texture() {
 		add_action( 'admin_enqueue_scripts', ['\HomeViet\Admin\Texture', 'enqueue_scripts'] );
-		add_action( 'save_post_texture', ['\HomeViet\Admin\Texture', 'save_texture'], 15, 3 );
+		//add_action( 'save_post_texture', ['\HomeViet\Admin\Texture', 'save_texture'], 15, 3 );
 		add_action( 'before_delete_post', ['\HomeViet\Admin\Texture', 'delete_texture_images'], 15, 2 );
 
 		add_filter( 'manage_texture_posts_columns', ['\HomeViet\Admin\Texture', 'custom_columns_header'] );

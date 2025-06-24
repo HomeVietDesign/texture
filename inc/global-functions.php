@@ -19,6 +19,10 @@ function has_role($role, $user=null) {
 	}
 }
 
+function map_term_id($term) {
+	return $term->term_id;
+}
+
 function get_term_parents($term, $parents=[]) {
 	
 	if($term->parent>0) {

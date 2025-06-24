@@ -147,15 +147,35 @@ window.addEventListener('DOMContentLoaded', function(){
 			return patt.test(p);
 		}
 		
-		$(".texture-slider").owlCarousel({
+		// $(".texture-slider").owlCarousel({
+		// 	items:1,
+		// 	lazyLoad:false,
+		// 	loop:false,
+		// 	autoplay:false,
+		// 	autoplayTimeout:3000,
+		// 	autoplayHoverPause:true,
+		// 	nav:false,
+		// 	dots:false
+		// });
+
+		$(".single-texture-slider").owlCarousel({
 			items:1,
+			margin:12,
 			lazyLoad:false,
-			loop:false,
+			loop:true,
 			autoplay:false,
 			autoplayTimeout:3000,
 			autoplayHoverPause:true,
-			nav:false,
-			dots:false
+			nav:true,
+			dots:false,
+			responsive: {
+				// 576: {
+				// 	items: 2
+				// },
+				992: {
+					items: 2
+				}
+			}
 		});
 
 		var lightbox = new PhotoSwipeLightbox({

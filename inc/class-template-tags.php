@@ -16,224 +16,16 @@ class Template_Tags {
 	public static function header_html() {
 		// body open custom code 5
 		add_action('wp_body_open', [__CLASS__, 'site_main_open'], 15);
-		add_action('wp_body_open', [__CLASS__, 'navbar_vertical'], 20);
+		add_action('wp_body_open', [__CLASS__, 'sidebar'], 20);
 		add_action('wp_body_open', [__CLASS__, 'navbar_top'], 30);
 		add_action('wp_body_open', [__CLASS__, 'site_content_open'], 40);
 	}
 
-	public static function navbar_vertical() {
-		$queried = get_queried_object();
-		$current_url = fw_current_url();
-		?>
-		<nav class="navbar navbar-vertical navbar-expand-lg">
-		<div class="collapse navbar-collapse" id="navbarVerticalCollapse">
-		<!-- scrollbar removed-->
-			<div class="navbar-vertical-content">
-				<ul class="navbar-nav flex-column" id="navbarVerticalNav">
-					<?php if(is_home() || is_front_page()) { ?>
-					<li class="nav-item">
-						<p class="navbar-vertical-label">Map mới đăng</p>
-						<hr class="navbar-vertical-line">
-						<?php
-						$query = new \WP_Query([
-							'post_type' => 'texture',
-							'posts_per_page' => 5,
-							'post_status' => 'publish',
-							'orderby' => 'date',
-							'order' => 'DESC'
-						]);
-
-						if($query->have_posts()) {
-							while ($query->have_posts()) {
-								$query->the_post();
-								get_template_part( 'parts/texture-side-loop' );
-							}
-
-							wp_reset_postdata();
-						}
-						?>
-					</li>
-					<?php } else if(is_tax('design_type')) { ?>
-					<li class="nav-item">
-						<div class="navbar-vertical-label d-flex justify-content-between align-items-center">
-							<span>Chất liệu</span>
-							<?php
-							$all_url = remove_query_arg('mat', $current_url);
-							?>
-							<a class="filter-remove d-block me-2 px-2 pt-1 bg-secondary-subtle border border-dark-subtle rounded-1" data-tax="material" href="<?=esc_url($all_url)?>" title="Tất cả">Tất cả</a>
-						</div>
-						<hr class="navbar-vertical-line">
-						<?php
-						
-							$queried = get_queried_object();
-							$mat = isset($_GET['mat']) ? absint($_GET['mat']) : '';
-							$parent = '';
-							if($mat) {
-								$mat_obj = get_term_by( 'term_id', $mat, 'material' );
-								$parent = $mat_obj->parent;
-							}
-
-							$materials = get_terms([
-								'taxonomy' => 'material',
-								'hide_empty' => false,
-								//'fields' => 'ids',
-								'parent' => 0
-							]);
-
-							if($materials) {
-								foreach ($materials as $key => $value) {
-									$children = get_term_children( $value->term_id, 'material' );
-									//debug($children);
-									$url = add_query_arg(['mat'=>$value->term_id], $current_url);
-									$class = ($mat==$value->term_id)?'active':'';
-									//$class .= ($parent==$value->term_id)?'':'';
-
-									?>
-									<div class="nav-item-wrapper">
-										<?php if(empty($children)) { ?>
-										<a class="nav-link label-1 <?=$class?> text-uppercase" href="<?=esc_url($url)?>" role="button" data-bs-toggle="" aria-expanded="false">
-											<div class="d-flex align-items-center">
-												<span class="nav-link-text-wrapper">
-													<span class="nav-link-icon"></span>
-													<span class="nav-link-text"><?=esc_html($value->name)?></span>
-												</span>
-											</div>
-										</a>
-										<?php } else { ?>
-										<span class="nav-link dropdown-indicator label-1 <?=$class?> text-uppercase">
-											<div class="d-flex align-items-center">
-												<a class="dropdown-indicator-icon-wrapper<?php echo ($mat==$value->term_id || $parent==$value->term_id) ? '':' collapsed'; ?>" href="#material-dropdown-<?=$value->term_id?>" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="material-dropdown-<?=$value->term_id?>"></a>
-												<a class="nav-link-text" href="<?=esc_url($url)?>"><?=esc_html($value->name)?></a>
-											</div>
-										</span>
-										<div class="parent-wrapper label-1">
-											<ul class="nav parent collapse<?php echo ($mat==$value->term_id || $parent==$value->term_id) ? ' show':''; ?>" data-bs-parent="#navbarVerticalCollapse" id="material-dropdown-<?=$value->term_id?>">
-												<?php
-												foreach($children as $child) {
-													$url = add_query_arg(['mat'=>$child], $current_url);
-													$class = ($mat==$child)?'active':'';
-													?>
-													<li class="nav-item">
-														<a class="nav-link <?=$class?>" href="<?=esc_url($url)?>">
-															<div class="d-flex align-items-center">
-																<span class="nav-link-text"><?=esc_html(get_term_field( 'name', $child, 'material' ))?></span>
-															</div>
-														</a>
-													</li>
-													<?php
-												}
-												?>
-											</ul>
-										</div>
-										<?php } ?>
-									</div>
-									<?php
-									// code...
-								}
-							}
-						?>
-					</li>
-
-					<li class="nav-item">
-						<hr class="navbar-vertical-line">
-						<div class="navbar-vertical-label d-flex justify-content-between align-items-center">
-							<span>Sản phẩm</span>
-							<?php
-							$all_url = remove_query_arg('pro', $current_url);
-							?>
-							<a class="filter-remove d-block me-2 px-2 pt-1 bg-secondary-subtle border border-dark-subtle rounded-1" data-tax="material" href="<?=esc_url($all_url)?>" title="Tất cả">Tất cả</a>
-						</div>
-						<hr class="navbar-vertical-line">
-						<?php
-							$queried = get_queried_object();
-							$pro = isset($_GET['pro']) ? absint($_GET['pro']) : '';
-
-							$products = get_terms([
-								'taxonomy' => 'texture_product',
-								'hide_empty' => false,
-								//'fields' => 'ids'
-							]);
-							if($products) {
-								
-								foreach ($products as $key => $value) {
-								$url = add_query_arg(['pro'=>$value->term_id], $current_url);
-								$class = ($pro==$value->term_id)?'active':'';
-								?>
-								<div class="nav-item-wrapper">
-									<a class="nav-link label-1 <?=$class?>" href="<?=esc_url($url)?>" role="button" data-bs-toggle="" aria-expanded="false">
-										<div class="d-flex align-items-center">
-											<span class="nav-link-text-wrapper">
-												<span class="nav-link-icon"></span>
-												<span class="nav-link-text"><?=esc_html($value->name)?></span>
-											</span>
-										</div>
-									</a>
-								</div>
-								<?php
-								// code...
-								}
-							}
-						
-						?>
-					</li>
-
-					<li class="nav-item">
-						<hr class="navbar-vertical-line">
-						<p class="navbar-vertical-label">Map mới đăng</p>
-						<hr class="navbar-vertical-line">
-						<?php
-						$args = [
-							'post_type' => 'texture',
-							'posts_per_page' => 5,
-							'post_status' => 'publish',
-							'orderby' => 'date',
-							'order' => 'DESC',
-							'tax_query' => [
-								'design_type' => [
-									'taxonomy' => 'design_type',
-									'field' => 'term_id',
-									'terms' => [$queried->term_id]
-								]
-							]
-						];
-
-						if(isset($_GET['seg'])) {
-							$args['tax_query']['segment'] = [
-								'taxonomy' => 'segment',
-								'field' => 'term_id',
-								'terms' => [absint($_GET['seg'])]
-							];
-						}
-
-						if(isset($_GET['mat'])) {
-							$args['tax_query']['material'] = [
-								'taxonomy' => 'material',
-								'field' => 'term_id',
-								'terms' => [absint($_GET['mat'])]
-							];
-						}
-
-						$query = new \WP_Query($args);
-
-						if($query->have_posts()) {
-							while ($query->have_posts()) {
-								$query->the_post();
-								get_template_part( 'parts/texture-side-loop' );
-							}
-
-							wp_reset_postdata();
-						}
-						?>
-					</li>
-					<?php
-
-					} // if(is_tax('design_type'))
-					?>
-				</ul>
-			</div>
-		</div>
-		</nav>
-		<?php
+	public static function sidebar() {
+		if(is_tax('design_type')) {
+			get_sidebar();
+		}
+		
 	}
 
 	public static function navbar_top() {
@@ -249,7 +41,7 @@ class Template_Tags {
 					<a class="navbar-brand me-1 me-sm-3" href="<?php echo home_url(); ?>">
 						<div class="d-flex align-items-center">
 							<div class="d-flex align-items-center">
-								<h5 class="logo-text ms-2 d-none d-sm-block"><?php bloginfo( 'name' ); ?></h5>
+								<h5 class="logo-text ms-2 d-none d-sm-block text-primary-emphasis"><?php bloginfo( 'name' ); ?></h5>
 							</div>
 						</div>
 					</a>
@@ -266,14 +58,15 @@ class Template_Tags {
 					'items_wrap' => '<ul class="navbar-nav navbar-nav-icons flex-row">%3$s</ul>',
 				]);
 				?>
-				<div class="search-box navbar-top-search-box d-none d-lg-block" style="width:25rem;">
-					<form class="position-relative" data-bs-toggle="search" data-bs-display="static" aria-expanded="false">
-						<input class="form-control search-input fuzzy-search rounded-pill form-control-sm" type="search" placeholder="Search..." aria-label="Search">
+				<div class="search-box navbar-top-search-box d-none d-lg-block position-relative" style="width:25rem;">
+					<form class="position-relative" action="<?=esc_url(home_url())?>" method="GET">
+						<input class="form-control search-input rounded-pill form-control-sm" type="search" name="s" placeholder="Search..." aria-label="Search" value="<?php the_search_query(); ?>">
+						<button type="submit" class="position-absolute btn btn-sm top-50 translate-middle-y end-0 border-0 me-1"><span class="dashicons dashicons-search"></span></button>
 					</form>
 				</div>
 
 				<ul class="navbar-nav navbar-nav-icons flex-row">
-					<li class="nav-item d-lg-none"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal">Search</a></li>
+					<li class="nav-item d-lg-none"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal">Tìm kiếm</a></li>
 					<?php if(is_user_logged_in()) {
 
 						$user = wp_get_current_user();
@@ -308,6 +101,10 @@ class Template_Tags {
 							</div>
 						</div>
 					</li>
+					<?php } else { ?>
+					<li class="nav-item">
+						<a class="nav-link px-3 d-block" href="<?php echo esc_url(wp_login_url(fw_current_url())); ?>"><span>Đăng nhập</span></a>
+					</li>
 					<?php } ?>
 				</ul>
 			</div>
@@ -327,8 +124,15 @@ class Template_Tags {
 		<?php
 	}
 
+	public static function right_sidebar() {
+		if(is_singular( 'texture' )) {
+			get_sidebar('right');
+		}
+	}
+
 	public static function footer_html() {
-		add_action('wp_footer', [__CLASS__, 'site_content_close'], 8);	
+		add_action('wp_footer', [__CLASS__, 'site_content_close'], 8);
+		add_action('wp_footer', [__CLASS__, 'right_sidebar'], 8);
 		add_action('wp_footer', [__CLASS__, 'site_main_close'], 9);
 		// enqueue scripts 10
 		// modal 50
@@ -370,15 +174,14 @@ class Template_Tags {
 			</div>
 		</div> -->
 
-		<div class="modal fade" id="searchBoxModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="true" data-phoenix-modal="data-phoenix-modal">
+		<div class="modal fade" id="searchBoxModal">
 			<div class="modal-dialog">
 				<div class="modal-content mt-15 rounded-pill">
 					<div class="modal-body p-0">
-						<div class="search-box navbar-top-search-box" data-list="{&quot;valueNames&quot;:[&quot;title&quot;]}" style="width: auto;">
-							<form class="position-relative" data-bs-toggle="search" data-bs-display="static" aria-expanded="false"><input class="form-control search-input fuzzy-search rounded-pill form-control-lg" type="search" placeholder="Search..." aria-label="Search">
-
-							</form>
-						</div>
+						<form class="position-relative" action="<?=esc_url(home_url())?>" method="GET">
+							<input class="form-control search-input rounded-pill" type="search" name="s" placeholder="Search..." aria-label="Search" value="<?php the_search_query(); ?>">
+							<button type="submit" class="position-absolute btn btn-sm top-50 translate-middle-y end-0 border-0 me-1"><span class="dashicons dashicons-search"></span></button>
+						</form>
 					</div>
 				</div>
 			</div>

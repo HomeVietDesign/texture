@@ -100,8 +100,9 @@ class Texture_Upload {
 				]);
 
 				if(is_int($insert_id)) {
-					$texture = \HomeViet\Texture::get_instance($insert_id);
-					$texture->set('images',[['attachment_id'=>$attachment_id,'url'=>wp_get_attachment_url($attachment_id)]]);
+					//$texture = \HomeViet\Texture::get_instance($insert_id);
+					set_post_thumbnail( $insert_id, $attachment_id );
+					//$texture->set('images',[['attachment_id'=>$attachment_id,'url'=>wp_get_attachment_url($attachment_id)]]);
 					if($supplier>0) {
 						wp_set_object_terms( $insert_id, [$supplier], 'supplier' );
 					}

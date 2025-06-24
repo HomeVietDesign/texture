@@ -1,7 +1,7 @@
 <?php
-global $post;
+global $post, $texture;
 //$texture->refresh();
-$texture = new \HomeViet\Texture($post);
+//$texture = new \HomeViet\Texture($post);
 
 $user = wp_get_current_user();
 
@@ -19,12 +19,12 @@ if (!is_array($ratings)) $ratings = [];
 			<?php
 			if(has_role('administrator')) {
 				?>
-				<a class="edit-texture-button position-absolute start-0 bottom-0 z-2 px-1 text-info" href="<?php echo esc_url(get_edit_post_link( $texture->id )); ?>" target="_blank">
+				<a class="edit-texture-button position-absolute start-0 bottom-0 z-2 p-1 lh-1 d-block text-info" href="<?php echo esc_url(get_edit_post_link( $texture->id )); ?>" target="_blank">
 					<span class="dashicons dashicons-welcome-write-blog"></span>
 				</a>
 				<?php
 			} else {
-				$avg = round($texture->get_meta('average_rating'),1);
+				$avg = round(floatval($texture->get_meta('average_rating')),1);
 				if(!empty($ratings) && $avg) {
 				?>
 				<span class="votes position-absolute start-0 bottom-0 z-2 px-1"><?=$avg?><span class="dashicons dashicons-star-filled"></span> / <?=count($ratings)?><span class="dashicons dashicons-admin-users"></span></span>
@@ -33,62 +33,51 @@ if (!is_array($ratings)) $ratings = [];
 			}
 			?>
 			<div class="ratio ratio-1x1 bg-dark-subtle z-1">
-			<?php
-			if($texture->get('images')) {
-				?>
-				<div class="position-absolute w-100 h-100 start-0 end-0">
-					<div class="texture-slider owl-carousel owl-theme pswp-gallery">
-						<?php
-						foreach ($texture->get('images') as $key => $value) {
-							//$src = wp_get_attachment_url( $value['attachment_id'] );
-							$src_full = wp_get_attachment_image_src( $value['attachment_id'], 'full' );
-							?>
-							<a class="d-block ratio ratio-1x1" href="<?=esc_url($src_full[0])?>" data-pswp-width="<?=$src_full[1]?>" data-pswp-height="<?=$src_full[2]?>">
-								<?php
-								echo wp_get_attachment_image($value['attachment_id'], 'large', false, ['class'=>'object-fit-cover']);
-								?>	
-							</a>
-							<?php
-						}
-						?>
-					</div>
-				</div>
+				<div class="thumbnail position-absolute w-100 h-100 start-0 end-0 pswp-gallery">
 				<?php
-			}
-			?>
+					if(has_post_thumbnail()) {
+						$src_full = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );
+						?>
+						<a class="d-block ratio ratio-1x1" href="<?=esc_url($src_full[0])?>" data-pswp-width="<?=$src_full[1]?>" data-pswp-height="<?=$src_full[2]?>">
+							<?php the_post_thumbnail( 'large' ); ?>
+						</a>
+						<?php
+					}
+				?>
+				</div>
 			</div>
 			<?php
-			$suppliers = get_the_terms( $texture->post, 'supplier' );
-			if($suppliers) {
+			
 				?>
-				<div class="texture-suppliers position-absolute end-0 bottom-0 z-2 px-1 d-flex">
+				<div class="position-absolute end-0 bottom-0 z-2 px-1 d-flex">
 				<?php
-				foreach ($suppliers as $key => $value) {
+				
+				?>
+				</div>
+				<?php
+
+			?>
+		</div>
+		<div class="info pb-3 text-center">
+			<h6 class="title m-0">
+				<a class="code d-block p-2 text-uppercase" href="<?php the_permalink(); ?>"><?php
+				//echo esc_html($texture->id);
+				the_title();
+				?></a>
+				<?php
+				$content = wp_get_the_content(get_the_content(null, false, $texture->post));
+				if($content!='') {
 					?>
-					<a class="zalo d-block bg-warning my-1 py-1 px-2 rounded-1 shadow" href="https://zalo.me/<?=esc_attr($value->name)?>" target="_blank" data-bs-toggle="tooltip" data-bs-title="Chat zalo với nhà cung cấp"><?=esc_html($value->description)?></a>
+					<!-- <a class="text-info" href="#" data-bs-toggle="popover" data-bs-content="<?php echo esc_attr($content); ?>" data-bs-html="true" data-bs-sanitize="false" data-bs-trigger="hover focus click" data-bs-placement="top" data-bs-custom-class="texture-detail"><span class="dashicons dashicons-info"></span></a> -->
 					<?php
 				}
 				?>
-				</div>
-				<?php
-			}
-			?>
-		</div>
-		<div class="info px-2 py-3 text-center">
-			<h6 class="title">
-				<?php
-				$content = wp_get_the_content(get_the_content(null, false, $texture->post));
-				?>
-				<a class="code text-dark" href="#"<?php
-				if($content!='') {
-					?> data-bs-toggle="popover" data-bs-content="Đang tải..." data-content="<?php echo esc_attr($content); ?>" data-bs-html="true" data-bs-sanitize="false" data-bs-trigger="click" data-bs-placement="top" data-bs-custom-class="texture-detail"<?php
-				}
-				?>><?php the_title(); ?></a>
 			</h6>
 			<?php
+			if(is_user_logged_in()) {
 			$rating = (isset($ratings[$user->ID])) ? absint($ratings[$user->ID]) : 0;
 			?>
-			<div class="texture-rating text-secondary d-flex justify-content-center flex-wrap " data-url="<?=esc_attr($_SERVER['REQUEST_URI'])?>" data-id="<?=$texture->id?>" data-rating="<?=$rating?>">
+			<div class="texture-rating text-secondary d-flex justify-content-center flex-wrap mb-2" data-url="<?=esc_attr($_SERVER['REQUEST_URI'])?>" data-id="<?=$texture->id?>" data-rating="<?=$rating?>">
 				<div class="order-last d-block w-100 text-center"><span class="star lh-1 star-none" data-value="0" data-bs-toggle="tooltip" data-bs-title="Hủy đánh giá sao">⮿</span></div>
 				<?php
 				for ($i = 1; $i <= 10; $i++) {
@@ -98,39 +87,56 @@ if (!is_array($ratings)) $ratings = [];
 				}
 				?>
 			</div>
-			<div class="terms mt-2 d-flex flex-wrap justify-content-center">
+			<?php } ?>
+			<div class="terms px-2 d-flex flex-wrap justify-content-center">
 			<?php
-			if(is_home() || is_front_page()) {
+			//if(!is_tax('design_type')) {
 				$types = get_the_terms( $texture->post, 'design_type' );
 				foreach($types as $value) {
-					echo '<a class="p-1 m-1 border rounded-1" href="'.esc_url(get_term_link( $value )).'">'.esc_html($value->name).'</a>';
+					echo '<a class="p-1 m-1 border border-primary text-primary-emphasis rounded-1" href="'.esc_url(get_term_link( $value )).'">'.esc_html($value->name).'</a>';
 				}
-				//the_terms( $texture->id, 'design_type', '<div class="terms mt-2">', ', ', '</div>' );
-			}
-			if(!isset($_GET['seg'])) {
-				$segments = get_the_terms( $texture->post, 'segment' );
-				if($segments) {
-					foreach($segments as $value) {
-						echo '<span class="p-1 m-1 border rounded-1">PK: '.esc_html($value->name).'</span>';
-					}
-				}
-			}
-			if(!isset($_GET['mat'])) {
+			//}
+
+			//if(!isset($_GET['mat'])) {
 				$materials = get_the_terms( $texture->post, 'material' );
 				if($materials) {
 					foreach($materials as $value) {
-						echo '<span class="p-1 m-1 border rounded-1">'.esc_html($value->name).'</span>';
+						echo '<span class="p-1 m-1 border border-danger text-danger-emphasis rounded-1">'.esc_html($value->name).'</span>';
 					}
 				}
-			}
-			if(!isset($_GET['pro'])) {
+			//}
+
+			//if(!isset($_GET['pro'])) {
 				$products = get_the_terms( $texture->post, 'texture_product' );
 				if($products) {
 					foreach($products as $value) {
-						echo '<span class="p-1 m-1 border rounded-1">'.esc_html($value->name).'</span>';
+						echo '<span class="p-1 m-1 border border-warning text-warning-emphasis rounded-1">'.esc_html($value->name).'</span>';
 					}
 				}
-			}
+			//}
+			?>
+			</div>
+			<div class="terms px-2 d-flex flex-wrap justify-content-center">
+			<?php
+			
+			//if(!isset($_GET['sup'])) {
+				$suppliers = get_the_terms( $texture->post, 'supplier' );
+				if($suppliers) {
+					foreach($suppliers as $value) {
+						echo '<a class="p-1 m-1 border border-success text-success-emphasis rounded-1" href="'.esc_url(get_term_link($value, $value->taxonomy)).'">'.esc_html($value->description).'</a>';
+					}
+				}
+			//}
+
+			//if(!isset($_GET['seg'])) {
+				$segments = get_the_terms( $texture->post, 'segment' );
+				if($segments) {
+					foreach($segments as $value) {
+						echo '<span class="p-1 m-1 border border-info-subtle text-info-emphasis rounded-1">'.esc_html($value->name).'</span>';
+					}
+				}
+			//}
+
 			?>
 			</div>
 		</div>
