@@ -17,7 +17,7 @@ class Ajax {
 				wp_mkdir_p($upload_dir['basedir'].'/download/');
 			}
 			
-			$save_path = $upload_dir['basedir'].'/download/'.basename($image_url);
+			$save_path = $upload_dir['basedir'].'/download/'.$texture->post->post_name.'.'.pathinfo(basename($image_url), PATHINFO_EXTENSION);
 
 			if(strpos($image_url, home_url())===false) {
 				// If the function it's not available, require it.
@@ -217,10 +217,5 @@ class Ajax {
 		exit;
 	}
 	
-	public static function logout_post_password() {
-		$url = isset($_REQUEST['url']) ? $_REQUEST['url'] : '';
-		if($url) wp_remote_request($url, ['method'=>'PURGE']);
-		exit;
-	}
 
 }

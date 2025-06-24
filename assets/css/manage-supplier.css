@@ -1,3 +1,7 @@
 .term-parent-wrap {
 	display: none;
 }
+#tag-description,
+#description {
+	height: 30px;
+}

@@ -21,7 +21,7 @@ class Theme {
 	}
 
 	public function hooks() {
-		$this->hooks_authentication();
+		//$this->hooks_authentication();
 		$this->hooks_custom_types();
 		$this->hooks_assets();
 		$this->hooks_head();
@@ -38,12 +38,11 @@ class Theme {
 	}
 
 	private function hooks_ajax() {
-		// add_action( 'wp_ajax_logout_post_password', ['\HomeViet\Ajax', 'logout_post_password'] );
-		// add_action( 'wp_ajax_nopriv_logout_post_password', ['\HomeViet\Ajax', 'logout_post_password'] );
 
 		add_action( 'wp_ajax_texture_detail', ['\HomeViet\Ajax', 'texture_detail'] );
 		add_action( 'wp_ajax_texture_rating', ['\HomeViet\Ajax', 'texture_rating'] );
 		add_action( 'wp_ajax_texture_download', ['\HomeViet\Ajax', 'texture_download'] );
+		add_action( 'wp_ajax_nopriv_texture_download', ['\HomeViet\Ajax', 'texture_download'] );
 	}
 
 	private function hooks_assets() {
@@ -83,13 +82,15 @@ class Theme {
 		add_action( 'init', ['\HomeViet\Custom_Types', '_theme_action_register_taxonomy'], 10 );
 		add_action( 'init', ['\HomeViet\Custom_Types', '_theme_action_register_custom_type'], 10 );
 
+		add_filter( 'post_type_link', ['\HomeViet\Custom_Types', 'rewrite_texture_url'], 10, 2 );
+
 		//add_filter( 'fw_ext_page_builder_supported_post_types', ['\HomeViet\Custom_Types', '_theme_filter_builder_supported_custom_type']);
 
 		add_action( 'pre_get_posts', ['\HomeViet\Custom_Types', 'query_custom_postype'] );
 		
 		//add_action( 'init', ['\HomeViet\Custom_Types', '_theme_action_register_post_status'], 10 );
 
-		//add_action( 'the_post', ['\HomeViet\Custom_Types', '_setup_loop_custom_type'], 10 );
+		add_action( 'the_post', ['\HomeViet\Custom_Types', '_setup_loop_custom_type'], 10 );
 
 		//add_action( 'terms_clauses', ['\HomeViet\Custom_Types', '_setup_term_default_sort'], 10, 3 );
 

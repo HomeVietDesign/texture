@@ -93,4 +93,11 @@ class Post {
 		}
 	}
 
+	public function get_id() {
+		return $this->id;
+	}
+
+	public function id() {
+		return $this->id;
+	}
 }

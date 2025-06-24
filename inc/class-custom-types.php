@@ -3,6 +3,19 @@ namespace HomeViet;
 
 class Custom_Types {
 
+	public static function rewrite_texture_url ($post_link, $post ) {
+		if ('texture' === $post->post_type) {
+			$terms = get_the_terms($post->ID, 'material');
+			if (!empty($terms) && !is_wp_error($terms)) {
+				$material_slug = array_pop($terms)->slug;
+				return str_replace('%material%', $material_slug, $post_link);
+			} else {
+				return str_replace('%material%', 'khong-chat-lieu', $post_link); // fallback
+			}
+		}
+		return $post_link;
+	}
+
 	public static function _theme_filter_builder_supported_custom_type($result) {
 		$texture = get_post_type_object( 'texture' );
 		if($texture) {
@@ -41,32 +54,37 @@ class Custom_Types {
 			'new_item'           => 'Map vật liệu mới',
 			'view_item'          => 'Xem Map vật liệu',
 			'search_items'       => 'Tìm Map vật liệu',
-			'not_found'          => 'Không có Map vật liệu nào',
-			'not_found_in_trash' => 'Không có Map vật liệu nào trong Thùng rác',
-			'parent_item_colon'  => 'Map vật liệu cha:',
+			'not_found'          => 'Không có phần tử nào',
+			'not_found_in_trash' => 'Không có phần tử nào trong Thùng rác',
+			'parent_item_colon'  => 'Cấp trên:',
 			'menu_name'          => 'Map vật liệu',
 		);
 	
 		$args = array(
 			'labels'              => $labels,
 			'hierarchical'        => false,
-			'public'              => false,
+			'public'              => true,
 			'show_ui'             => true,
 			'show_in_menu'        => true,
 			'show_in_admin_bar'   => true,
 			'menu_position'       => 5,
 			'menu_icon'           => 'dashicons-format-image',
 			'show_in_nav_menus'   => false,
-			'publicly_queryable'  => false, // ẩn bài viết ở front-end
+			'publicly_queryable'  => true, // ẩn bài viết ở front-end
 			'exclude_from_search' => false, // loại khỏi kết quả tìm kiếm
 			'has_archive'         => true,
 			'query_var'           => true,
 			'can_export'          => true,
-			'rewrite'             => false,
+			'rewrite'             => [
+				//'slug'=>'texture'
+				'slug' => '%material%',
+        		'with_front' => false
+			],
 			'capability_type'     => 'post',
+			//'map_meta_cap'		  => true,
 			'supports'            => array(
 				'title',
-				//'thumbnail',
+				'thumbnail',
 				'editor',
 				//'excerpt',
 				//'revisions',
@@ -153,7 +171,10 @@ class Custom_Types {
 			'show_ui'           => true,
 			'show_admin_column' => true,
 			'query_var'         => true,
-			'rewrite'           => ['slug'=>'chat-lieu'],
+			'rewrite'           => [
+				'slug'=>'chat-lieu',
+				'with_front' => false,
+			],
 			//'rewrite'           => false,
 			'public' 			=> true,
 			'show_in_nav_menus' => true,
@@ -275,21 +296,10 @@ class Custom_Types {
 
 		//debug_log($submenu);
 
-		if ( isset( $menu[25] ) ) {
-			unset($menu[25]);
-		}
-
-		if ( isset( $submenu['options-general.php'][25] ) ) {
-			unset($submenu['options-general.php'][25]);
-		}
-
-		if ( isset( $menu[5] ) ) {
-			unset($menu[5]);
-		}
-
-		// if ( isset( $submenu['edit.php'] ) ) {
-		// 	unset($submenu['edit.php']);
-		// }
+		remove_menu_page( 'edit-comments.php' ); // ẩn menu Comments
+		remove_menu_page( 'edit.php' ); // ẩn menu Blog posts
+		remove_menu_page( 'fw-extensions' ); // ẩn menu Unyson
+		remove_menu_page( 'separator1' );
 
 		add_menu_page( 'Nhà cung cấp', 'Nhà cung cấp', 'manage_categories', 'edit-tags.php?taxonomy=supplier', null, 'dashicons-businessperson', 4 );
 	}
@@ -322,8 +332,8 @@ class Custom_Types {
 	public static function _setup_loop_custom_type($post) {
 		global $post, $texture;
 
-		$texture = new \HomeViet\Texture($post);
-		//$texture = \HomeViet\Texture::get_instance($post->ID);
+		//$texture = new \HomeViet\Texture($post);
+		$texture = \HomeViet\Texture::get_instance($post->ID);
 
 	}
 
@@ -332,27 +342,48 @@ class Custom_Types {
 			//$wp_query->set('post_type','texture');
 			
 			if(is_tax('design_type')) {
-				$user = wp_get_current_user();
+				$meta_query = [];
 
-				// $wp_query->set('meta_key','rating_'.$user->ID);
-				// $wp_query->set('orderby','meta_value_num');
-				// $wp_query->set('order','DESC');
+				if(is_user_logged_in()) {
+					$user = wp_get_current_user();
 
-				$meta_query = [
-					'relation' => 'OR',
-					'rating_1' => [
-						'key' => 'rating_'.$user->ID,
-						//'value' => 0, 
-						'compare' => 'EXISTS',
-						'type' => 'SIGNED'
-					],
-					'rating_2' => [
-						'key' => 'rating_'.$user->ID,
-						//'value' => '', 
-						'compare' => 'NOT EXISTS',
-						'type' => 'SIGNED'
-					],
-				];
+					// $wp_query->set('meta_key','rating_'.$user->ID);
+					// $wp_query->set('orderby','meta_value_num');
+					// $wp_query->set('order','DESC');
+
+					$meta_query = [
+						'relation' => 'OR',
+						'rating_1' => [
+							'key' => 'rating_'.$user->ID,
+							//'value' => 0, 
+							'compare' => 'EXISTS',
+							'type' => 'SIGNED'
+						],
+						'rating_2' => [
+							'key' => 'rating_'.$user->ID,
+							//'value' => '', 
+							'compare' => 'NOT EXISTS',
+							'type' => 'SIGNED'
+						],
+					];
+
+				} else {
+					$meta_query = [
+						'relation' => 'OR',
+						'rating_1' => [
+							'key' => 'average_rating',
+							//'value' => 0, 
+							'compare' => 'EXISTS',
+							'type' => 'SIGNED'
+						],
+						'rating_2' => [
+							'key' => 'average_rating',
+							//'value' => '', 
+							'compare' => 'NOT EXISTS',
+							'type' => 'SIGNED'
+						],
+					];
+				}
 
 				$tax_query = [];
 
@@ -380,6 +411,14 @@ class Custom_Types {
 					];
 				}
 
+				if(isset($_GET['sup'])) {
+					$tax_query['supplier'] = [
+						'taxonomy' => 'supplier',
+						'field' => 'term_id',
+						'terms' => [absint($_GET['sup'])]
+					];
+				}
+
 				//debug_log($tax_query);
 				if(!empty($meta_query)) {
 					$wp_query->set('meta_query', $meta_query);
@@ -391,6 +430,9 @@ class Custom_Types {
 					$wp_query->set('tax_query', $tax_query);
 				}
 				//debug_log($wp_query);
+			} elseif (is_search()) {
+				//debug_log($wp_query);
+				$wp_query->set('post_type', 'texture');
 			}
 		}
 	}
