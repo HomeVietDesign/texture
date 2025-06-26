@@ -39,13 +39,18 @@ $current_url = fw_current_url();
 				<a class="filter-remove d-block me-2 px-2 pt-1 bg-secondary-subtle border border-dark-subtle rounded-1" data-tax="material" href="<?=esc_url($all_url)?>" title="Tất cả">Tất cả</a>
 			</div>
 			<hr class="navbar-vertical-line">
+			<div class="nav-item-wrapper nav-search-term px-4 mb-2">
+				<input type="text" id="search-material" class="form-control form-control-sm" placeholder="Tìm...">
+			</div>
+			<div id="material-list-search" class="hidden">
+
+			</div>
+			<div id="material-list">
 			<?php
 			foreach ($materials as $key => $value) {
 				$children = get_term_children( $value->term_id, 'material' );
-				//debug($children);
 				$url = add_query_arg(['mat'=>$value->term_id], $current_url);
 				$class = ($mat==$value->term_id)?'active':'';
-				//$class .= ($parent==$value->term_id)?'':'';
 
 				?>
 				<div class="nav-item-wrapper">
@@ -87,9 +92,9 @@ $current_url = fw_current_url();
 					<?php } ?>
 				</div>
 				<?php
-				// code...
 			}
 			?>
+			</div>
 		</li>
 		<?php
 		}

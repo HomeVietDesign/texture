@@ -39,8 +39,9 @@ class Theme {
 
 	private function hooks_ajax() {
 
-		add_action( 'wp_ajax_texture_detail', ['\HomeViet\Ajax', 'texture_detail'] );
+		//add_action( 'wp_ajax_texture_detail', ['\HomeViet\Ajax', 'texture_detail'] );
 		add_action( 'wp_ajax_texture_rating', ['\HomeViet\Ajax', 'texture_rating'] );
+
 		add_action( 'wp_ajax_texture_download', ['\HomeViet\Ajax', 'texture_download'] );
 		add_action( 'wp_ajax_nopriv_texture_download', ['\HomeViet\Ajax', 'texture_download'] );
 	}

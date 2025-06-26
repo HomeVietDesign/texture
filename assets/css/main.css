@@ -92,7 +92,12 @@ img.aligncenter {
   width: auto;
   z-index: 100000; /* Above WP toolbar. */
 }
+.hide,.hidden {
+	display: none!important;
+	visibility: hidden!important;
+}
 /* ---------------------------------------------- */
+
 .navbar-vertical {
   position: fixed;
   display: inline-block;

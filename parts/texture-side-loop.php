@@ -62,6 +62,29 @@ $texture = new \HomeViet\Texture($post);
 				}
 				?>
 			</h6>
+			<?php
+			//if(!isset($_GET['sup'])) {
+				$suppliers = get_the_terms( $texture->post, 'supplier' );
+				if($suppliers) {
+				?>
+				<div class="suppliers d-flex justify-content-center my-2">
+					<div class="me-1">Nhà cung cấp:</div>
+					<div class="d-flex flex-wrap fw-bold">
+					<?php
+						foreach($suppliers as $key => $value) {
+							$url = fw_get_db_term_option($value->term_id, $value->taxonomy, 'website', '');
+							if($key>0) {
+								echo '<div class="me-1">,</div>';
+							}
+							echo '<a class="d-flex" href="'.esc_url($url?$url:'#').'">'.esc_html($value->description).'</a>';
+						}
+					?>
+					</div>
+				</div>
+				<?php
+				}
+			//}
+			?>
 			<div class="terms px-2 d-flex flex-wrap justify-content-center">
 			<?php
 			//if(!is_tax('design_type')) {
@@ -88,19 +111,6 @@ $texture = new \HomeViet\Texture($post);
 					}
 				}
 			//}
-			?>
-			</div>
-			<div class="terms px-2 d-flex flex-wrap justify-content-center">
-			<?php
-			
-			//if(!isset($_GET['sup'])) {
-				$suppliers = get_the_terms( $texture->post, 'supplier' );
-				if($suppliers) {
-					foreach($suppliers as $value) {
-						echo '<a class="p-1 m-1 border border-success text-success-emphasis rounded-1" href="'.esc_url(get_term_link($value, $value->taxonomy)).'">'.esc_html($value->description).'</a>';
-					}
-				}
-			//}
 
 			//if(!isset($_GET['seg'])) {
 				$segments = get_the_terms( $texture->post, 'segment' );
@@ -110,7 +120,6 @@ $texture = new \HomeViet\Texture($post);
 					}
 				}
 			//}
-
 			?>
 			</div>
 		</div>

@@ -3,6 +3,7 @@ namespace HomeViet;
 
 class Ajax {
 
+
 	public static function texture_download() {
 		//$user = wp_get_current_user();
 		$id = isset($_REQUEST['id']) ? absint($_REQUEST['id']) : 0;

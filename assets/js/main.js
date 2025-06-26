@@ -193,5 +193,35 @@ window.addEventListener('DOMContentLoaded', function(){
 				}
 			});
 		});
+
+		let ajax_material_search = null;
+
+		$('#search-material').on('input', debounce(function(event){
+			let $input = $(this),
+				kw = $input.val().toLowerCase(),
+				$search_list = $('#material-list-search'),
+				$list = $('#material-list');
+
+			if(kw!='') {
+				$search_list.removeClass('hidden');
+				$list.addClass('hidden');
+
+				let html = $('<div class="nav-item-wrapper"></div>');
+
+				$list.find('.nav-link-text').filter(function(){
+					let $link_text = $(this);
+					if($link_text.text().toLowerCase().indexOf(kw) > -1) {
+						let a = '<a class="nav-link dropdown-indicator label-1" href="'+$link_text.closest('a').attr('href')+'"><div class="d-flex align-items-center"><span class="nav-link-text-wrapper"><span class="nav-link-icon"></span><span class="nav-link-text">'+$link_text.text()+'</span></span></div></a>';
+						html.append(a);
+					}
+				});
+				
+				$search_list.html(html);
+
+			} else {
+				$search_list.addClass('hidden');
+				$list.removeClass('hidden');
+			}
+		}));
 	});
 });
