@@ -38,11 +38,28 @@ class Texture {
 	}
 
 	public static function meta_boxes() {
-		remove_meta_box(
-			'customerdiv' // ID
-			,   'texture'            // Screen, empty to support all post types
-			,   'side'      // Context
-		);
+		// remove_meta_box(
+		// 	'customerdiv' // ID
+		// 	,   'texture'            // Screen, empty to support all post types
+		// 	,   'side'      // Context
+		// );
+
+		add_meta_box(
+            'content'     // Reusing just 'content' doesn't work.
+        ,   'Mô tả thêm'    // Title
+        ,   [__CLASS__, 'post_content_editor'] // Display function
+        ,   'texture'              // Screen, we use all screens with meta boxes.
+        ,   'normal'          // Context
+        ,   'default'            // Priority
+        );
+	}
+
+	public static function post_content_editor($post) {
+		wp_editor( unescape($post->post_content), 'content2', [
+			'tinymce' => true,
+			'textarea_name' => 'content',
+			'editor_height' => 500,
+		] );
 	}
 
 	public static function ajax_change_texture_dimension() {

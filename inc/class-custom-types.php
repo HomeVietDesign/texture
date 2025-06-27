@@ -85,7 +85,7 @@ class Custom_Types {
 			'supports'            => array(
 				'title',
 				'thumbnail',
-				'editor',
+				//'editor',
 				//'excerpt',
 				//'revisions',
 				//'page-attributes',
