@@ -3,11 +3,6 @@ global $post, $texture;
 //$texture->refresh();
 //$texture = new \HomeViet\Texture($post);
 
-$user = wp_get_current_user();
-
-$ratings = $texture->get('ratings', []);
-if (!is_array($ratings)) $ratings = [];
-
 //debug($ratings);
 
 ?>
@@ -17,6 +12,7 @@ if (!is_array($ratings)) $ratings = [];
 			<div class="year position-absolute start-0 top-0 z-2 px-1"><?php echo esc_html(get_post_time( 'd/m/Y', false, $texture->post )); ?></div>
 			<button class="texture-download position-absolute end-0 top-0 z-2 p-1 border-0 bg-transparent" type="button" data-id="<?=$texture->id?>"><span class="dashicons dashicons-download"></span></button>
 			<?php
+			/*
 			if(has_role('administrator')) {
 				?>
 				<a class="edit-texture-button position-absolute start-0 bottom-0 z-2 p-1 lh-1 d-block text-info" href="<?php echo esc_url(get_edit_post_link( $texture->id )); ?>" target="_blank">
@@ -31,6 +27,7 @@ if (!is_array($ratings)) $ratings = [];
 				<?php
 				}
 			}
+			*/
 			?>
 			<div class="ratio ratio-1x1 bg-dark-subtle z-1">
 				<div class="thumbnail position-absolute w-100 h-100 start-0 end-0 pswp-gallery">
@@ -96,21 +93,7 @@ if (!is_array($ratings)) $ratings = [];
 				}
 				?>
 			</h6>
-			<?php
-			if(is_user_logged_in()) {
-			$rating = (isset($ratings[$user->ID])) ? absint($ratings[$user->ID]) : 0;
-			?>
-			<div class="texture-rating text-secondary d-flex justify-content-center flex-wrap mb-2" data-url="<?=esc_attr($_SERVER['REQUEST_URI'])?>" data-id="<?=$texture->id?>" data-rating="<?=$rating?>">
-				<div class="order-last d-block w-100 text-center"><span class="star lh-1 star-none" data-value="0" data-bs-toggle="tooltip" data-bs-title="Hủy đánh giá sao">⮿</span></div>
-				<?php
-				for ($i = 1; $i <= 10; $i++) {
-					?>
-					<span class="star lh-1<?php echo ($i<=$rating) ? ' voted' :''; ?>" data-value="<?=$i?>" data-bs-toggle="tooltip" data-bs-title="<?=$i?>">★</span>
-					<?php
-				}
-				?>
-			</div>
-			<?php } ?>
+			<?php echo do_shortcode('[user_texture_rating_block id="'.$texture->id.'" ttl="0" cache="private"]'); ?>
 			<div class="terms px-2 d-flex flex-wrap justify-content-center">
 			<?php
 			//if(!is_tax('design_type')) {

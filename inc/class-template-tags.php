@@ -65,48 +65,7 @@ class Template_Tags {
 					</form>
 				</div>
 
-				<ul class="navbar-nav navbar-nav-icons flex-row">
-					<li class="nav-item d-lg-none"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal">Tìm kiếm</a></li>
-					<?php if(is_user_logged_in()) {
-
-						$user = wp_get_current_user();
-					?>
-					<li class="nav-item dropdown">
-						<a class="nav-link pe-0" id="navbarDropdownUser" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
-							<!-- <span class="dashicons dashicons-admin-users"></span> -->
-							<?php echo esc_html($user->display_name); ?>
-						</a>
-						<div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border" aria-labelledby="navbarDropdownUser">
-							<div class="card position-relative border-0">
-								<!-- <div class="card-body p-0">
-									<div class="text-center pt-4 pb-3">
-										<h6 class="mt-2 text-body-emphasis"><?php echo esc_html($user->display_name); ?></h6>
-									</div>
-								</div> -->
-								<div class="overflow-auto scrollbar">
-									<ul class="nav d-flex flex-column my-1 py-1">
-										<li class="nav-item">
-											<a class="nav-link px-3 d-block" href="<?php echo esc_url(get_edit_profile_url()); ?>"><span>Thông tin tài khoản</span></a>
-										</li>
-										<?php if(has_role('administrator')) { ?>
-										<li class="nav-item">
-											<a class="nav-link px-3 d-block" href="<?php echo esc_url(admin_url('edit.php?post_type=texture')); ?>"><span>Vào trang admin</span></a>
-										</li>
-										<?php } ?>
-									</ul>
-								</div>
-								<div class="card-footer p-3 border-top border-translucent">
-									<div class="px-3 text-center"><a class="btn btn-sm btn-secondary" href="<?php echo esc_url(wp_logout_url(fw_current_url())); ?>">Đăng xuất</a></div>
-								</div>
-							</div>
-						</div>
-					</li>
-					<?php } else { ?>
-					<li class="nav-item">
-						<a class="nav-link px-3 d-block" href="<?php echo esc_url(wp_login_url(fw_current_url())); ?>"><span>Đăng nhập</span></a>
-					</li>
-					<?php } ?>
-				</ul>
+				<?php echo do_shortcode('[user_info_block ttl="0" cache="private"]'); ?>
 			</div>
 		</nav>
 		<?php

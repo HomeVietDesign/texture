@@ -24,6 +24,7 @@ class Theme {
 		//$this->hooks_authentication();
 		$this->hooks_custom_types();
 		$this->hooks_assets();
+		$this->hooks_shortcode();
 		$this->hooks_head();
 		$this->hooks_header();
 		$this->hooks_footer();
@@ -44,6 +45,11 @@ class Theme {
 
 		add_action( 'wp_ajax_texture_download', ['\HomeViet\Ajax', 'texture_download'] );
 		add_action( 'wp_ajax_nopriv_texture_download', ['\HomeViet\Ajax', 'texture_download'] );
+	}
+
+	private function hooks_shortcode() {
+		add_shortcode( 'user_texture_rating_block', ['\HomeViet\Shortcode', 'user_texture_rating_block'] );
+		add_shortcode( 'user_info_block', ['\HomeViet\Shortcode', 'user_info_block'] );
 	}
 
 	private function hooks_assets() {
@@ -126,6 +132,7 @@ class Theme {
 		include_once THEME_DIR.'/inc/class-post.php';
 		include_once THEME_DIR.'/inc/class-texture.php';
 		include_once THEME_DIR.'/inc/class-term.php';
+		include_once THEME_DIR.'/inc/class-shortcode.php';
 		include_once THEME_DIR.'/inc/class-template-tags.php';
 		include_once THEME_DIR.'/inc/class-walker-primary-menu.php';
 		include_once THEME_DIR.'/inc/class-walker-secondary-menu.php';

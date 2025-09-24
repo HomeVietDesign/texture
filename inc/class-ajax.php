@@ -98,17 +98,17 @@ class Ajax {
 			wp_cache_delete($texture->id, 'posts');
 			$texture->refresh();
 
-			do_action( 'litespeed_purge_post', $texture->id );
-			do_action( 'litespeed_purge_url', $url );
-			do_action( 'litespeed_purge_url', home_url('/') );
+			// do_action( 'litespeed_purge_post', $texture->id );
+			// do_action( 'litespeed_purge_url', $url );
+			// do_action( 'litespeed_purge_url', home_url('/') );
 
-			$design_types = get_the_terms( $texture->post, 'design_type' );
-			if($design_types) {
-				foreach ($design_types as $key => $value) {
-					$term_link = get_term_link( $value, 'design_type' );
-					if($term_link!=$url) do_action( 'litespeed_purge_url', $term_link );
-				}
-			}
+			// $design_types = get_the_terms( $texture->post, 'design_type' );
+			// if($design_types) {
+			// 	foreach ($design_types as $key => $value) {
+			// 		$term_link = get_term_link( $value, 'design_type' );
+			// 		if($term_link!=$url) do_action( 'litespeed_purge_url', $term_link );
+			// 	}
+			// }
 
 			//do_action( 'litespeed_purge_all' );
 			
